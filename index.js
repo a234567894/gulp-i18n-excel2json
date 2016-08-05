@@ -31,7 +31,7 @@ function stringify(jsonObj) {
  * @returns {{}} json
  */
 var toJson = function (fileName, colKey, colValArray, rowStart, rowHeader) {
-    console.log("toJson");
+    //console.log("toJson");
     var workbook;
     if (typeof fileName === 'string') {
         workbook = XLSX.readFile(fileName);
@@ -55,39 +55,39 @@ var toJson = function (fileName, colKey, colValArray, rowStart, rowHeader) {
     for (var key in worksheet) {
         if (worksheet.hasOwnProperty(key)) {
             var cell = worksheet[key];
-            //console.log(key+'='+cell.v);
+            //console.log(key+'='+cell.w);
             var match = /([A-Z]+)(\d+)/.exec(key);
             if (!match) {
                 continue;
             }
             var col = match[1]; // ABCD
             var row = match[2]; // 1234
-            var value = cell.v;
+            var value = cell.w;
 
             if (row == rowHeader) {
                 if (col !== colKey) {
-                    console.log(key+'='+cell.v);
+                    //console.log(key+'='+cell.w);
                     json[value] = {};
                     langMapByCol[col] = value;
                     langMapByLang[value] = true;
                 }
             } else if (row >= rowStart) {
-                console.log(langMapByCol);
-                console.log(langMapByLang);
-                console.log(json);
+                //console.log(langMapByCol);
+                //console.log(langMapByLang);
+                //console.log(json);
                 if (col == colKey) {
                     lastConcatNestedKey = value;
                     var i18nKeyArray = value.split('.');
                     for (var oneLang in langMapByLang) {
                         if(langMapByLang.hasOwnProperty(oneLang)) {
-                            console.log('oneLang=', oneLang);
+                            //console.log('oneLang=', oneLang);
                             var jsonTmp = json[oneLang];
                             //console.log('jsonTmp=', jsonTmp);
                             for (var ind in i18nKeyArray) {
                                 if (i18nKeyArray.hasOwnProperty(ind)) {
                                     var indexName = i18nKeyArray[ind];
                                     if (!jsonTmp.hasOwnProperty(indexName)) {
-                                        console.log('indexName=', indexName, ' jsonTmp=', jsonTmp);
+                                        //console.log('indexName=', indexName, ' jsonTmp=', jsonTmp);
                                         jsonTmp[indexName] = (ind == i18nKeyArray.length - 1 ? undefined : {});
                                     }
                                     refToJsonNestedObj[oneLang] = jsonTmp;
@@ -103,13 +103,13 @@ var toJson = function (fileName, colKey, colValArray, rowStart, rowHeader) {
                         if (colValArray.hasOwnProperty(oneColVal)) {
                             if (col == colValArray[oneColVal]) {
                                 var currentLang = langMapByCol[col];
-                                console.log('currentLang='+currentLang, 'refToJsonNestedObj=', refToJsonNestedObj);
+                                //console.log('currentLang='+currentLang, 'refToJsonNestedObj=', refToJsonNestedObj);
                                 if (typeof refToJsonNestedObj[currentLang][refToJsonNestedKey[currentLang]] === 'object') {
                                     console.warn('ERROR', col + row + '=' + value, 'cannot be set into', '"' + lastConcatNestedKey + '"', 'ALREADY EXISTS AS OBJECT: ' + lastConcatNestedKey + '=', refToJsonNestedObj[currentLang][refToJsonNestedKey[currentLang]]);
                                 } else if (refToJsonNestedObj[currentLang][refToJsonNestedKey[currentLang]] !== undefined) {
                                     console.warn('ERROR', col + row + '=' + value, 'cannot be set into', '"' + lastConcatNestedKey + '"', 'ALREADY DEFINED : ' + lastConcatNestedKey + '=', refToJsonNestedObj[currentLang][refToJsonNestedKey[currentLang]]);
                                 } else {
-                                    console.log('set value in ' + refToJsonNestedKey[currentLang] + ' of', refToJsonNestedObj[currentLang], 'with value', value);
+                                    //console.log('set value in ' + refToJsonNestedKey[currentLang] + ' of', refToJsonNestedObj[currentLang], 'with value', value);
                                     refToJsonNestedObj[currentLang][refToJsonNestedKey[currentLang]] = value;
                                 }
                             }
@@ -139,7 +139,7 @@ function filePath(savePath, jsonObj, lang, key) {
     }
 
     savePath = savePath.replace(new RegExp('__lng__', 'g'), lang);
-    console.log('savePath='+savePath, writeObj);
+    //console.log('savePath='+savePath, writeObj);
 
     return new File({
         cwd: '.',
